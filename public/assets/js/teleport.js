@@ -1,8 +1,9 @@
+//A script that handles the teleportation of the runner player.
 AFRAME.registerComponent('teleport', {
     init : function(){
-        //let socket = io();
         const Context_AF = this;
 
+        //Check to see if the player has clicked on a teleport pad and move them to the one they clicked.
         Context_AF.el.addEventListener('click', function(event){
             const cameraHeight = document.getElementById('playerCamera').getAttribute('position');
             const position = Context_AF.el.getAttribute('position');

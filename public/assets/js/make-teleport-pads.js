@@ -1,5 +1,7 @@
+//A function used to automatically generate many HTML elements for the teleportation pads.
 AFRAME.registerComponent('make-teleport-pads', {
     init: function(){
+        //A varaible that holds the position of all of the desired teleport pads.
         const positions = 
         [[0.22, 0, -3.75], 
         [-5.665, 0, -3.75],
@@ -308,18 +310,27 @@ AFRAME.registerComponent('make-teleport-pads', {
         [6, 0, -60.5],
         [3, 0, -60.5]];
 
+        //Go thorugh all of the elements of the positions array and call on a function to create the HTML element.
         for(i = 0; i < positions.length; i++){
             this.addPad(positions[i]);
         }
     },
 
+    //A function that creates the teleport HTML element and the passed in position.
     addPad : function(position){
+        //Declare the entity.
         let teleElem = document.createElement('a-entity');
+        //Set all of the attributes of the entity.
+        //Generate an id for the entity with the current index of the loop.
         teleElem.setAttribute('id', 'tele_' + i);
+        //Declare the class, for the raycaster.
         teleElem.setAttribute('class', 'teleportPad');
+        //Add the teleport mixin.
         teleElem.setAttribute('mixin', 'teleportMixin');
+        //Set the postion of the pad.
         teleElem.setAttribute('position', position[0] + ' ' + position[1] + ' ' + position[2]);
         
+        //Create the element as a child of the current entity.
         let scene = document.querySelector('a-scene');
         this.el.appendChild(teleElem);
     }

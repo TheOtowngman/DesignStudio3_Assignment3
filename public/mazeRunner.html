@@ -2,91 +2,60 @@
 <html>
     <head>
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
-        <script src='/assets/js/set-debug-text.js'></script>
         <script src='/assets/js/teleport.js'></script>
         <script src='/assets/js/make-teleport-pads.js'></script>
+        <script src='/assets/js/pointing-raycast.js'></script>
     </head>
     <body>
         <a-scene>
             <a-assets>
+                <!-- Importing the maze 3D model. -->
                 <a-asset-item id='mazeObj' src='/assets/maze.obj'></a-asset-item>
+                <!-- Creating a mixin for all of the teleportation pads. This allows it to be repeatable and reduce the amount of code needed to be written. -->
                 <a-mixin id='teleportMixin' geometry='primitive:cylinder; height: 0.01; radius:0.4;' material='color: blue' teleport></a-mixin>
-                <a-mixin id='debugTextMixin' position='1.7 0.8 0'></a-mixin>
             </a-assets>
 
+            <!--A floor for the scene. -->
+            <a-plane id='floor' height='100' width='100' rotation='-90 0 0' material='color:white' position='0 0 -24'></a-plane>
 
-            <!-- <a-entity environment="preset: default"></a-entity> -->
-
-            <a-plane id='floor' height='100' width='100' rotation='-90 0 0' material='color:white' position='0 0 '></a-plane>
-
+            <!-- The group where all of the elements for the player are contained. -->
             <a-entity id="cameraGroup" position="0 1.6 0" rotation="0 0 0" update>
-                <!-- Create the camera. -->
+                
+                <!-- A plane that will show the current instructions from the other player. -->
+                <a-entity id='instructionsGroup' position='0 -0.25 0' rotation='0 0 0'>
+                    <!-- The plane where the text will be displayed. -->
+                    <a-entity id='instrcutionsPlane'
+                        geometry='primitive:plane; width:0.30; height:0.20;'
+                        position='0 0 -0.25'
+                        rotation='-60 0 0'
+                        material='color:black;'>
+                            <!-- The text that contains the instructions from the other player. -->
+                            <a-entity id='instructionsText' 
+                                text='value:; width: 1.0; align: center' 
+                                position='0 0 0'>
+                            </a-entity>
+                    </a-entity>
+                </a-entity>
+                
+                <!-- The player's camera. The camera can be moved with the mouse or touchscreen, but does not have movement controls. -->
                 <a-entity id="playerCamera" camera look-controls position="0 0 0">
                     <!-- Create a raycaster with the mouse as the orgin of the raycast. -->
                     <a-entity cursor="rayOrigin:mouse; fuse: false;" 
-                        raycaster="far: 100; objects:.button, .teleportPad;" 
-                        >
+                        raycaster="far: 100; objects:.button, .teleportPad;">
                     </a-entity>
                 </a-entity>
             </a-entity>
-            
-            
-            <a-box id='orginBox' 
-                height='1.0' width='1.0' depth='1.0' 
-                material='color:blue' 
-                position='0 0 0'>
-            </a-box>
 
-            <a-obj-model id='maze' src="#mazeObj" position='-1.5 0 -32' scale='3 1 3' material='color: red'></a-obj-model>
+            <!-- Draw the maze. -->
+            <a-obj-model id='maze' class='maze' src="#mazeObj" position='-1.5 0 -32' scale='3 1 3' material='color: red'></a-obj-model>
 
+            <!-- Create a group that holds all of the teleport pads, the script attached will automatically generate all of the pads within the group. -->
             <a-entity id='teleportPadGroup' make-teleport-pads></a-entity>
         </a-scene>
         
-
+        <!-- Incude the socket functions. -->
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            let socket = io();
-            AFRAME.registerComponent('update', {
-                schema: {
-                    frameCounter: {type:'int', default:0},
-                    updateInterval: {type:'int', default: 10}
-                },
-                
-                init : function(){
-
-                    
-
-                    //default connect event
-                    socket.on('connect', function() {
-                            console.log("connected!");
-                        });
-
-                        socket.on('input', function(data) {
-                            //create rgb color string for css
-                            
-                            let input = data
-                            console.log("action: " + data);
-                        });
-
-                    this.el.addEventListener('componentchanged', function(evt){
-                        console.log('moved');
-                    });
-                },
-                tick: function(){
-                    
-                    this.data.frameCounter += 1;
-                    if(this.data.frameCounter == this.data.updateInterval){
-                        this.data.frameCounter = 0;
-                        socket.emit('position', this.el.object3D.position);
-                        socket.emit('rotation', document.querySelector('#playerCamera').getAttribute('rotation').y);
-                    }
-
-                    
-                },
-                
-            })
-            
-        </script>
+        <!--A script that handles all of the networking between the client and the server. -->
+        <script src='/assets/js/runner-networking.js'></script>
     </body>
 </html>

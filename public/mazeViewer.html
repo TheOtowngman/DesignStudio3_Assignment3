@@ -8,95 +8,72 @@
     <body>
         <a-scene>
             <a-assets>
+                <!-- Import the maze 3D model. -->
                 <a-asset-item id='mazeObj' src='/assets/maze.obj'></a-asset-item>
-                <a-mixin id='teleportMixin' geometry='primitive:cylinder; height: 0.01; radius:0.4;' material='color: blue' teleport></a-mixin>
-                <a-mixin id='debugTextMixin' position='1.7 0.8 0'></a-mixin>
             </a-assets>
 
+            <!-- A group with contains all of the entities related to the player's view. -->
             <a-entity id="cameraGroup" position="0 1.6 0" rotation="0 0 0">
-                <!-- Create the camera. -->
+                <!-- The player's camera, with the look and movement controls locked. -->
                 <a-entity id="playerCamera" 
                     camera look-controls='false' 
                     wasd-controls='false' 
                     position="0 40 -32.5" 
                     rotation="-90 0 0">
-                    <a-entity   cursor="fuse:false; fuseTimeout:500; rayOrigin:mouse; "
-                                raycaster="far:100; interval:100; objects:.button">
-                    </a-entity>
+                        <!--A raycaster with the cursor as the orgin. -->
+                        <a-entity cursor="fuse:false; fuseTimeout:500; rayOrigin:mouse; "
+                            raycaster="far:100; interval:100; objects:.button">
+                        </a-entity>
                 </a-entity>
             </a-entity>
 
+            <!--The floor of the scene.-->
             <a-plane id='floor' height='100' width='100' rotation='-90 0 0' material='color:white' position='0 -0.4 0'></a-plane>
+            <!--Load the maze.-->
             <a-obj-model id='maze' src="#mazeObj" position='-1.5 0 -32' scale='3 0.01 3' material='color: red'></a-obj-model>
+            
+            <!-- A group which holds all eneties for the other player's position and rotation. -->
             <a-entity id='playerBox' web-socket>
+                <!-- An arrow that shows which way the other player is currently facing. -->
                 <a-entity id='arrow' geometry='primitive:triangle' material='color:red' rotation='-90 0 0' position='0 0 -0.70' scale='0.5 0.5 0.5'></a-entity>
+                <!-- A object that shows the other player's current position.-->
                 <a-entity id='playerBox' geometry='primitive:cylinder; height:0.01; radius:0.3' material='color:blue;' position='0 0 0'></a-entity>
             </a-entity>
 
+            <!-- All of the buttons that show the other player what direction to go. -->
             <a-entity id='buttonContainer' position='50 0 -30' scale='5 1 5'>
                 <a-entity id='forwardButton' class='button'
                     geometry='primitive:box; height:1.0; width:1.3; depth:0.01;'
                     position='0 0 -1.5'
                     rotation='90 0 0'
                     material='color:grey' move-buttons>
-                    <a-entity id='buttonText' text='value:Up; width:1.0' position='4.7 0 0' rotation='180 0 0' scale='10 10 10'></a-entity>
+                    <a-entity id='buttonText' text='value:Forward; width:1.0; align: center' position='0 0 0' rotation='180 0 0' scale='6 6 6'></a-entity>
                 </a-entity>
                 <a-entity id='backwardButton' class='button'
                     geometry='primitive:box; height:1.0; width:1.3; depth:0.01;'
                     position='0 0 1.5'
                     rotation='90 0 0'
                     material='color:grey' move-buttons>
-                    <a-entity id='buttonText' text='value:Back; width:1.0' position='4.5 0 0' rotation='180 0 0' scale='10 10 10'></a-entity>
+                    <a-entity id='buttonText' text='value:Backward; width:1.0; align: center' position='0 0 0' rotation='180 0 0' scale='6 6 6'></a-entity>
                 </a-entity>
                 <a-entity id='rightButton' class='button'
                     geometry='primitive:box; height:1.0; width:1.3; depth:0.01;'
                     position='1.5 0 0'
                     rotation='90 0 0'
                     material='color:grey' move-buttons>
-                    <a-entity id='buttonText' text='value:Right; width:1.0' position='4.45 0 0' rotation='180 0 0' scale='10 10 10'></a-entity>
+                    <a-entity id='buttonText' text='value:Right; width:1.0; align: center' position='0 0 0' rotation='180 0 0' scale='6 6 6'></a-entity>
                 </a-entity>
                 <a-entity id='leftButton' class='button'
                     geometry='primitive:box; height:1.0; width:1.3; depth:0.01;'
                     position='-1.5 0 0'
                     rotation='90 0 0'
                     material='color:grey' move-buttons>
-                    <a-entity id='buttonText' text='value:Left; width:1.0' position='4.55 0 0' rotation='180 0 0' scale='10 10 10'></a-entity>
+                    <a-entity id='buttonText' text='value:Left; width:1.0; align: center' position='0 0 0' rotation='180 0 0' scale='6 6 6'></a-entity>
                 </a-entity>
-            </a-entity>
-            
+            </a-entity>   
         </a-scene>
 
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            let socket = io();
-            AFRAME.registerComponent('web-socket', {
-                
-                init:function(){
-                    //default connect event
-                    socket.on('connect', function() {
-                        console.log("connected!");
-                    });
-
-                    socket.on('player_position', function(data){
-                        //console.log(data);
-                        // data.x += 0.5;
-                        data.y -= 1.59;
-                        document.querySelector('#playerBox').setAttribute('position', data);
-                    });
-                    socket.on('player-rotation', function(data){
-                        document.querySelector('#playerBox').setAttribute('rotation', '0 ' + data + ' 0');
-                    });
-                }
-            });
-            AFRAME.registerComponent('move-buttons', {
-                init : function(){
-                    this.el.addEventListener('click', function(event){
-                        socket.emit('move', this.getAttribute('id'));
-                    });
-                }
-            });
-            
-            
-        </script>
+        <script src='/assets/js/viewer-networking.js'></script>
     </body>
 </html>

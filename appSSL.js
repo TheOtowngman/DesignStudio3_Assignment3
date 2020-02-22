@@ -1,16 +1,3 @@
-//running this instead of app e.g. 'node appSSL.js' instead of 'node app.js' lets you pretend to serve your page over HTTPS
-//HTTPS is required for other devices connecting your localhost (i.e. mobile) to access accelerometers and other device sensors.
-//note this is a bit hacky and if you restart your serve your browser may not let you visit as the new SSLL cert != the new one
-//if this happens clear all your browsing data and restart browser (confirmed this workd on ios safari)
-//for desktop use Chrome as it seems to alows let you bypass ("proceeding to unsafe site")
-
-//STEPS (this will allow Aframe/WebXR API access mobile platform sensors when accessing this server):
-//1. run 'node createCerts.js'
-//2. run 'node appSSL.js'
-//3. go to 'https://localhost:1111'
-//4. ignore "safety warnings" from brwoser and go ahead to site anyhow
-//5. after creating certs you shouldn't have to run 'node createCerts.js' again until you move to another machine
-
 const https     = require('https');
 const forge     = require('node-forge');
 const fs        = require('fs');
@@ -18,7 +5,7 @@ const express   = require('express');
 const app       = express();
 
 //const vars
-const LISTEN_PORT = 1111;
+const LISTEN_PORT = 8080;
 
 //middleware - set default html folder
 app.use(express.static(__dirname + '/public'));
@@ -80,9 +67,10 @@ socketIO.on('connection', function(socket) {
     
 
     //Info from runner.
+    //When the server gets a packet called position, then relay that data back under a different name.
     socket.on('position', function(data){
         //console.log(data);
-        socketIO.sockets.emit('player_position', data);
+        socketIO.sockets.emit('player-position', data);
     });
     socket.on('rotation', function(data){
         //console.log(data);
@@ -91,7 +79,7 @@ socketIO.on('connection', function(socket) {
 
     //Info from the viewer.
     socket.on('move', function(data){
-        console.log(data);
+        //console.log(data);
         socketIO.sockets.emit('move-instruction', data);
     })
 });
