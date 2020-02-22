@@ -50,7 +50,7 @@
             AFRAME.registerComponent('update', {
                 schema: {
                     frameCounter: {type:'int', default:0},
-                    updateInterval: {type:'int', default: 50}
+                    updateInterval: {type:'int', default: 10}
                 },
                 
                 init : function(){
@@ -78,14 +78,11 @@
                     this.data.frameCounter += 1;
                     if(this.data.frameCounter == this.data.updateInterval){
                         this.data.frameCounter = 0;
-                        this.socketHandler(this.el.object3D.position);
                         socket.emit('position', this.el.object3D.position);
-                        //console.log(this.el.object3D.position);
+                        socket.emit('rotation', document.querySelector('#playerCamera').getAttribute('rotation').y);
                     }
+
                     
-                },
-                socketHandler : function(){
-                      
                 },
                 
             })

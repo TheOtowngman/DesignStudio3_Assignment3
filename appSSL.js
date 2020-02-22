@@ -77,27 +77,22 @@ socketIO.on('connection', function(socket) {
     socket.on('disconnect', function(data) {
         console.log(socket.id + ' has disconnected');
     });
+    
 
-    //custom events
-    //socket = one client
-    //socketIO.sockets = all clients
-    socket.on('moveLeft', function(data) {
-        console.log('moveLeft');
-        socketIO.sockets.emit('input', 'moveLeft');
-    });
-
-    socket.on('forward', function(data) {
-        console.log('forward');
-        socketIO.sockets.emit('input', 'forward');
-    });
-
-    socket.on('moveRight', function(data) {
-        console.log('moveRight');
-        socketIO.sockets.emit('input', 'moveRight');
-    });
+    //Info from runner.
     socket.on('position', function(data){
-        console.log(data);
+        //console.log(data);
         socketIO.sockets.emit('player_position', data);
+    });
+    socket.on('rotation', function(data){
+        //console.log(data);
+        socketIO.sockets.emit('player-rotation', data);
+    });
+
+    //Info from the viewer.
+    socket.on('move', function(data){
+        console.log(data);
+        socketIO.sockets.emit('move-instruction', data);
     })
 });
 
