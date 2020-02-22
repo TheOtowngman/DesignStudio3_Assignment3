@@ -1,13 +1,14 @@
 AFRAME.registerComponent('teleport', {
     init : function(){
+        //let socket = io();
         const Context_AF = this;
 
         Context_AF.el.addEventListener('click', function(event){
-            console.log('Clicked.');
             const cameraHeight = document.getElementById('playerCamera').getAttribute('position');
             const position = Context_AF.el.getAttribute('position');
             //console.log(position.y);
             document.getElementById('cameraGroup').object3D.position.set(position.x, position.y + 1.6, position.z);
+            //socket.emit(position);
         });
         
         //Scale up the teleport pad when the mouse hovers over it.

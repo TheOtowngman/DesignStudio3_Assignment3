@@ -32,8 +32,8 @@ app.get('/mazeRunner', function(req,res) {
     res.sendFile(__dirname + '/public/mazeRunner.html');
 });
 
-app.get('/controller', function(req,res) {
-    res.sendFile(__dirname + '/public/controller.html');
+app.get('/mazeViewer', function(req,res) {
+    res.sendFile(__dirname + '/public/mazeViewer.html');
 });
 
 /************* LOAD SSL CERTS (if you ran 'node createCerts.js') ***************/
@@ -95,6 +95,10 @@ socketIO.on('connection', function(socket) {
         console.log('moveRight');
         socketIO.sockets.emit('input', 'moveRight');
     });
+    socket.on('position', function(data){
+        console.log(data);
+        socketIO.sockets.emit('player_position', data);
+    })
 });
 
 /************* RUN HTTPS SERVER ***************/

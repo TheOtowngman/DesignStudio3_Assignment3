@@ -307,7 +307,7 @@ AFRAME.registerComponent('make-teleport-pads', {
         [6, 0, -57.5],
         [6, 0, -60.5],
         [3, 0, -60.5]];
-        console.log(positions.length);
+
         for(i = 0; i < positions.length; i++){
             this.addPad(positions[i]);
         }

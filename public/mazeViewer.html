@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+        <script src='/assets/js/make-teleport-pads.js'></script>
+    </head>
+    <body>
+        <a-scene>
+            <a-assets>
+                <a-asset-item id='mazeObj' src='/assets/maze.obj'></a-asset-item>
+                <a-mixin id='teleportMixin' geometry='primitive:cylinder; height: 0.01; radius:0.4;' material='color: blue' teleport></a-mixin>
+                <a-mixin id='debugTextMixin' position='1.7 0.8 0'></a-mixin>
+            </a-assets>
+
+            <a-entity id="cameraGroup" position="0 1.6 0" rotation="0 0 0">
+                <!-- Create the camera. -->
+                <a-entity id="playerCamera" camera look-controls='false' wasd-controls='false' position="0 40 -32.5" rotation="-90 0 0">
+                    <!-- Create a raycaster with the mouse as the orgin of the raycast. -->
+                    <!-- <a-entity cursor="rayOrigin:mouse; fuse: false;" 
+                        raycaster="far: 100; objects:.button, .teleportPad;" 
+                        >
+                    </a-entity> -->
+                </a-entity>
+            </a-entity>
+
+            <a-plane id='floor' height='100' width='100' rotation='-90 0 0' material='color:white' position='0 -0.4 0'></a-plane>
+            <a-obj-model id='maze' src="#mazeObj" position='-1.5 0 -32' scale='3 0.01 3' material='color: red'></a-obj-model>
+            <a-entity id='playerBox' web-socket>
+                <a-entity id='playerBox' geometry='primitive:cylinder; height:0.01; radius:0.5' material='color:blue;' position='0 0 0' ></a-entity>
+            </a-entity>
+            
+        </a-scene>
+
+        
+        <!-- <h1>This is the controller client</h1>
+
+        <button id="moveLeft" style="background-color:red; color:whitesmoke;">moveLeft</button>
+        <button id="forward" style="background-color:green; color:whitesmoke;">forward</button>
+        <button id="moveRight" style="background-color:blue; color:whitesmoke;">moveRight</button> -->
+
+        <!-- scripts go to bottom if you want them to execute AFTER the rest of the web page renders -->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            let socket = io();
+            AFRAME.registerComponent('web-socket', {
+                
+                init:function(){
+                    //default connect event
+                    socket.on('connect', function() {
+                        console.log("connected!");
+                    });
+
+                    socket.on('player_position', function(data){
+                        console.log(data);
+                        // data.x += 0.5;
+                        data.y -= 1.59;
+                        document.querySelector('#playerBox').setAttribute('position', data);
+                    });
+                }
+                
+
+                //let's send some events to the server to pass on. Programmatic telephone game!
+                //querySelector() is a more modern and versatile function of getElementById()
+                //#name or class
+                //.name for classes
+                //etc.
+                //https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector 
+                //note that querySelector can also be used on elements so that you only search for their children
+                //instead of all elements within teh "document"
+            });
+            
+            
+        </script>
+    </body>
+</html>
